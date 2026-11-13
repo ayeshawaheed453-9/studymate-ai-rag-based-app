@@ -1,0 +1,399 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>StudyMate AI | Your Learning Space</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f6f7fc;--white:#fff;--purple:#7355df;--purple2:#9278f4;--ink:#20223a;--muted:#8589a2;--line:#e9e9f2;--soft:#f0edff;--green:#169b72}
+body{font-family:Inter,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+button,input,textarea{font:inherit}
+button{cursor:pointer}
+.topbar{height:76px;background:white;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 5%;position:sticky;top:0;z-index:10;gap:20px}
+.brand{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:800;white-space:nowrap}
+.brand-icon{height:39px;width:39px;border-radius:12px;background:linear-gradient(135deg,#9b7aff,#6545d7);color:white;display:grid;place-items:center;font-size:21px}
+.navlinks{display:flex;align-items:center;gap:5px}
+.nav{border:0;background:transparent;color:#777b91;padding:11px 14px;border-radius:9px;font-size:12px;font-weight:600;white-space:nowrap}
+.nav:hover,.nav.active{background:var(--soft);color:var(--purple)}
+.profile{display:flex;align-items:center;gap:10px;font-size:12px;font-weight:700;white-space:nowrap}
+.avatar{width:36px;height:36px;border-radius:50%;background:#eee8ff;color:#6749d2;display:grid;place-items:center;font-weight:bold}
+.main{max-width:1250px;margin:auto;padding:34px 30px 60px}
+.page{display:none}.page.active{display:block}
+.pagehead{display:flex;align-items:center;justify-content:space-between;margin-bottom:23px;gap:15px}
+.pagehead h2{font-size:23px;letter-spacing:-.5px}
+.pagehead p{font-size:12px;color:var(--muted);margin-top:7px}
+.pill{background:#e9f8f1;color:var(--green);border-radius:30px;padding:9px 13px;font-size:11px;font-weight:700}
+.hero{position:relative;overflow:hidden;border-radius:22px;padding:43px;background:linear-gradient(115deg,#382a82,#7555db 65%,#9c81ef);color:white;margin-bottom:23px}
+.hero:after{content:"✦";position:absolute;right:8%;top:4px;font-size:180px;color:#ffffff17}
+.hero-label{font-size:10px;letter-spacing:2px;color:#ded5ff;font-weight:700}
+.hero h1{font-size:36px;max-width:570px;line-height:1.2;margin:17px 0 13px}
+.hero p{font-size:13px;line-height:1.8;color:#e4dfff;max-width:560px}
+.actions{display:flex;gap:10px;margin-top:23px;flex-wrap:wrap}
+.btn{border:0;border-radius:9px;padding:12px 17px;font-size:12px;font-weight:700;background:var(--purple);color:white}
+.btn.white{background:white;color:#6044c7}
+.btn.ghost{background:#ffffff20;border:1px solid #ffffff60;color:white}
+.btn:hover{filter:brightness(1.08)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin:20px 0 27px}
+.stat{background:white;border:1px solid var(--line);border-radius:14px;padding:19px}
+.stat-top{display:flex;justify-content:space-between;color:var(--muted);font-size:11px}
+.stat-icon{height:34px;width:34px;border-radius:10px;background:var(--soft);display:grid;place-items:center;font-size:17px}
+.stat h3{font-size:27px;margin:13px 0 5px}
+.stat small{font-size:10px;color:var(--muted)}
+.section-title{display:flex;align-items:center;justify-content:space-between;margin:25px 0 14px}
+.section-title h3{font-size:16px}
+.section-title span{font-size:11px;color:var(--muted)}
+.grid{display:grid;grid-template-columns:1.4fr 1fr;gap:17px}
+.card{background:white;border:1px solid var(--line);border-radius:15px;padding:20px}
+.card h3{font-size:14px;margin-bottom:8px}
+.sub{font-size:11px;color:var(--muted);line-height:1.7}
+.pipeline{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}
+.step{background:#f8f7ff;border:1px solid #eeebff;padding:14px 8px;text-align:center;border-radius:11px}
+.step b{display:block;font-size:20px;margin-bottom:8px}
+.step strong{font-size:10px}
+.step small{display:block;color:var(--muted);font-size:9px;margin-top:5px}
+.activity{display:flex;align-items:center;gap:11px;padding:13px 0;border-bottom:1px solid var(--line)}
+.activity:last-child{border:0}
+.activity-icon{height:34px;width:34px;background:var(--soft);border-radius:10px;display:grid;place-items:center}
+.activity strong{font-size:11px;display:block}
+.activity small{font-size:10px;color:var(--muted)}
+.upload{display:block;border:2px dashed #c9bafc;background:#faf9ff;border-radius:16px;text-align:center;padding:40px 15px;margin:18px 0;cursor:pointer;transition:background .18s,border-color .18s}
+.upload:hover,.upload.dragging{background:#f2efff;border-color:var(--purple)}
+.upload .symbol{font-size:38px;margin-bottom:12px}
+.upload h3{font-size:15px;margin-bottom:8px}
+.upload p{font-size:11px;color:var(--muted);line-height:1.7}
+input[type=file]{display:none}
+.upload-status{min-height:20px;margin:-5px 0 16px}
+.doc{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px;border:1px solid var(--line);border-radius:11px;margin:9px 0;background:white}
+.doc-info{display:flex;align-items:center;gap:12px;min-width:0}
+.doc-icon{width:38px;height:38px;background:#f0edff;border-radius:10px;display:grid;place-items:center}
+.doc strong{font-size:12px;overflow-wrap:anywhere}
+.doc small{display:block;color:var(--muted);font-size:10px;margin-top:5px}
+.delete{border:0;background:#fff0f1;color:#d34c62;padding:8px 11px;border-radius:7px;font-size:10px}
+.chat-layout{display:grid;grid-template-columns:1fr 240px;gap:16px}
+.chatbox{height:550px;padding:0;display:flex;flex-direction:column;overflow:hidden}
+.chathead{padding:17px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:700}
+.ai-dot{color:var(--green);font-size:10px}
+.messages{flex:1;overflow:auto;padding:19px;display:flex;flex-direction:column;gap:13px}
+.msg{max-width:85%;padding:12px 15px;border-radius:13px;font-size:12px;line-height:1.8;white-space:pre-wrap;overflow-wrap:anywhere}
+.bot{background:#f0edff;color:#353052;align-self:flex-start}
+.user{background:var(--purple);color:white;align-self:flex-end}
+.chatinput{display:flex;gap:9px;padding:14px;border-top:1px solid var(--line)}
+.chatinput textarea{flex:1;resize:none;min-height:43px;background:#fafaff;border:1px solid var(--line);border-radius:9px;padding:12px;outline:none;font-size:12px}
+.chatinput button{width:45px;border:0;border-radius:9px;background:var(--purple);color:white}
+.quick{width:100%;display:block;text-align:left;background:#faf9ff;border:1px solid var(--line);border-radius:9px;padding:12px;margin-top:9px;color:#51447c;font-size:11px}
+.quick:hover{border-color:var(--purple)}
+.tools{display:grid;grid-template-columns:repeat(2,1fr);gap:15px;margin-top:18px}
+.tool{background:white;border:1px solid var(--line);padding:22px;border-radius:14px;cursor:pointer;transition:.2s}
+.tool:hover{border-color:#a995fa;transform:translateY(-2px);box-shadow:0 8px 25px #5b43a20c}
+.tool-icon{width:42px;height:42px;border-radius:12px;background:var(--soft);display:grid;place-items:center;font-size:21px;margin-bottom:13px}
+.tool h3{font-size:14px;margin-bottom:7px}
+.tool p{font-size:11px;color:var(--muted);line-height:1.7}
+.tool button{margin-top:15px;border:0;background:var(--soft);color:var(--purple);padding:9px 12px;border-radius:7px;font-size:10px;font-weight:700}
+.result{font-size:12px;line-height:1.9;white-space:pre-wrap;margin-top:15px;color:#44435a}
+.field{display:block;margin-top:18px;font-size:12px;font-weight:600}
+.field input{display:block;width:100%;padding:13px;margin-top:8px;border:1px solid var(--line);background:#fafaff;border-radius:9px;outline:none;color:var(--ink)}
+.field input:focus,.chatinput textarea:focus{border-color:var(--purple)}
+.notice{background:#fff8e8;color:#8a641b;border:1px solid #f0dfb4;border-radius:10px;padding:14px;font-size:11px;line-height:1.8;margin-top:17px}
+.empty{text-align:center;padding:25px;color:var(--muted);font-size:12px}
+.footer{text-align:center;color:#a0a1b1;font-size:10px;margin-top:35px}
+@media(max-width:950px){.topbar{height:auto;min-height:72px;flex-wrap:wrap;padding:14px 4%}.navlinks{order:3;width:100%;overflow-x:auto}.nav{padding:10px 12px}.main{padding:25px 20px}.stats{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:650px){.profile span{display:none}.hero{padding:26px}.hero h1{font-size:27px}.grid,.chat-layout{grid-template-columns:1fr}.tools{grid-template-columns:1fr}.main{padding:19px 13px}.pipeline{gap:6px}.step{padding:10px 4px}.pagehead h2{font-size:20px}}
+</style>
+</head>
+<body>
+
+<nav class="topbar">
+<div class="brand"><div class="brand-icon">✦</div>StudyMate AI</div>
+<div class="navlinks">
+<button class="nav active" data-page="overview">⌂ Overview</button>
+<button class="nav" data-page="library">▤ My Library</button>
+<button class="nav" data-page="tutor">✧ AI Tutor</button>
+<button class="nav" data-page="tools">⚡ Study Tools</button>
+<button class="nav" data-page="settings">⚙ Settings</button>
+</div>
+<div class="profile"><div class="avatar">S</div><span>My Workspace</span></div>
+</nav>
+
+<main class="main">
+<section class="page active" id="overview">
+<div class="pagehead"><div><h2>Welcome to your learning space 👋</h2><p>Your personal AI-powered study workspace.</p></div><span class="pill">● Workspace Ready</span></div>
+<div class="hero">
+<div class="hero-label">✦ YOUR INTELLIGENT STUDY COMPANION</div>
+<h1>Make every study session count.</h1>
+<p>Upload your notes, explore your documents, ask questions and turn complex study material into knowledge with StudyMate AI.</p>
+<div class="actions"><button class="btn white" onclick="show('library')">＋ Upload Documents</button><button class="btn ghost" onclick="show('tutor')">✧ Start Learning</button></div>
+</div>
+<div class="stats">
+<div class="stat"><div class="stat-top">Total Documents <span class="stat-icon">📚</span></div><h3 id="docCount">0</h3><small>Files in your library</small></div>
+<div class="stat"><div class="stat-top">Text Chunks <span class="stat-icon">🧩</span></div><h3 id="chunkCount">0</h3><small>Prepared for retrieval</small></div>
+<div class="stat"><div class="stat-top">Study Questions <span class="stat-icon">💬</span></div><h3 id="questionCount">0</h3><small>Questions submitted</small></div>
+<div class="stat"><div class="stat-top">AI Assistant <span class="stat-icon">✨</span></div><h3 style="font-size:20px">Ready</h3><small>Gemini connection available</small></div>
+</div>
+<div class="grid">
+<div>
+<div class="section-title"><h3>Your RAG Learning Process</h3><span>How it works</span></div>
+<div class="card"><p class="sub">StudyMate retrieves relevant passages from your uploaded documents and sends them to Gemini to generate contextual answers.</p>
+<div class="pipeline">
+<div class="step"><b>📄</b><strong>Upload</strong><small>Study files</small></div>
+<div class="step"><b>📝</b><strong>Extract</strong><small>Read text</small></div>
+<div class="step"><b>🧩</b><strong>Chunk</strong><small>Split content</small></div>
+<div class="step"><b>🔎</b><strong>Retrieve</strong><small>Find passages</small></div>
+<div class="step"><b>🧠</b><strong>Gemini</strong><small>Generate answer</small></div>
+<div class="step"><b>💡</b><strong>Learn</strong><small>Understand</small></div>
+</div></div>
+</div>
+<div>
+<div class="section-title"><h3>Quick Access</h3><span>Get started</span></div>
+<div class="card">
+<div class="activity"><div class="activity-icon">📁</div><div><strong>Upload your notes</strong><small>Add PDF or TXT files</small></div></div>
+<div class="activity"><div class="activity-icon">🤖</div><div><strong>Ask your AI Tutor</strong><small>Explore your documents</small></div></div>
+<div class="activity"><div class="activity-icon">📝</div><div><strong>Generate study material</strong><small>Summaries and MCQs</small></div></div>
+<button class="btn" style="width:100%;margin-top:13px" onclick="show('tutor')">Open AI Tutor →</button>
+</div>
+</div>
+</div>
+<div class="section-title"><h3>Recently Added Documents</h3><span onclick="show('library')" style="cursor:pointer">View all →</span></div>
+<div class="card" id="recent"><div class="empty">Your uploaded documents will appear here.</div></div>
+</section>
+
+<section class="page" id="library">
+<div class="pagehead"><div><h2>My Knowledge Library</h2><p>Manage your study documents in one place.</p></div><span class="pill">PDF · TXT</span></div>
+<label class="upload" id="uploadArea" for="files">
+<div class="symbol">☁️</div><h3>Drop your study materials here</h3><p>Click to browse and upload your PDF or TXT files.<br>Your documents are kept only while this page is open.</p>
+<input type="file" id="files" accept=".pdf,.txt" multiple>
+</label>
+<p class="sub upload-status" id="uploadStatus" role="status" aria-live="polite">Ready for PDF or TXT files up to 10 MB each.</p>
+<div class="section-title"><h3>All Documents</h3><span id="fileCount">0 files</span></div>
+<div id="docs"><div class="empty">Your library is empty.</div></div>
+</section>
+
+<section class="page" id="tutor">
+<div class="pagehead"><div><h2>AI Study Tutor ✨</h2><p>Ask questions and learn from your uploaded documents.</p></div><span class="pill">● Gemini AI</span></div>
+<div class="chat-layout">
+<div class="card chatbox">
+<div class="chathead">✦ StudyMate AI <span class="ai-dot">● Online when configured</span></div>
+<div class="messages" id="messages"><div class="msg bot">Hello! 👋 Welcome to StudyMate AI. Upload your study documents, configure your Gemini API key in Settings, and ask me anything about your notes.</div></div>
+<div class="chatinput"><textarea id="question" rows="2" placeholder="Ask something about your study material..."></textarea><button onclick="send()">➤</button></div>
+</div>
+<div class="card"><h3>Suggested Questions</h3><p class="sub">Choose a question to get started.</p>
+<button class="quick" onclick="quick('Summarize my uploaded documents.')">📝 Summarize my notes</button>
+<button class="quick" onclick="quick('Explain important concepts in simple English.')">📖 Explain key concepts</button>
+<button class="quick" onclick="quick('Create 10 MCQs with answers from my documents.')">☑ Generate MCQs</button>
+<button class="quick" onclick="quick('Identify the most important exam topics.')">🎯 Find exam topics</button>
+</div>
+</div>
+</section>
+
+<section class="page" id="tools">
+<div class="pagehead"><div><h2>Study Tools</h2><p>Your AI-powered tools for better learning and revision.</p></div><span class="pill">Smart Learning</span></div>
+<div class="tools">
+<div class="tool" onclick="makeTool('Create a detailed and easy-to-understand summary of my documents.')"><div class="tool-icon">📝</div><h3>Smart Summary</h3><p>Convert lengthy study notes into clear, structured summaries.</p><button>Generate Summary →</button></div>
+<div class="tool" onclick="makeTool('Generate 10 multiple-choice questions with four options and correct answers from my documents.')"><div class="tool-icon">☑️</div><h3>MCQ Generator</h3><p>Practice important concepts with multiple-choice questions.</p><button>Create MCQs →</button></div>
+<div class="tool" onclick="makeTool('Create 10 flashcards with questions and answers from my documents.')"><div class="tool-icon">🗂️</div><h3>Flashcards</h3><p>Remember important definitions and concepts.</p><button>Create Flashcards →</button></div>
+<div class="tool" onclick="makeTool('Identify important exam topics from my documents and explain each topic.')"><div class="tool-icon">🎯</div><h3>Exam Preparation</h3><p>Discover key topics and prepare for your examinations.</p><button>Find Topics →</button></div>
+</div>
+<div class="section-title"><h3>Generated Study Material</h3></div>
+<div class="card"><div id="result" class="result">Your generated learning content will appear here.</div></div>
+</section>
+
+<section class="page" id="settings">
+<div class="pagehead"><div><h2>Settings & Configuration</h2><p>Personalize your StudyMate AI experience.</p></div></div>
+<div class="card">
+<h3>Google Gemini Connection</h3><p class="sub">Enter your Gemini API key to enable AI-powered answers and study tools.</p>
+<label class="field">Gemini API Key<input type="password" id="apiKey" placeholder="Enter your Gemini API key"></label>
+<label class="field">Gemini Model<input id="model" value="gemini-2.5-flash"></label>
+<button class="btn" style="margin-top:18px" onclick="saveSettings()">Save Configuration</button>
+<div class="notice">🔒 Security: This frontend-only app sends your API key directly from your browser to Google. Never publish this key in a public repository or share the app with your key saved. For a public production app, a secure backend is necessary.</div>
+<p class="sub" style="margin-top:17px">Get your API key from <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:#7355df">Google AI Studio →</a></p>
+</div>
+</section>
+<div class="footer">StudyMate AI · Learn smarter, one document at a time.</div>
+</main>
+
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+localStorage.removeItem("sm_docs");
+localStorage.removeItem("sm_questions");
+let docs=[];
+let questions=0;
+let apiKey=sessionStorage.getItem("sm_key")||"";
+let model=localStorage.getItem("sm_model")||"gemini-2.5-flash";
+document.getElementById("apiKey").value=apiKey;
+document.getElementById("model").value=model;
+
+function show(id){
+document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+document.querySelectorAll(".nav").forEach(b=>b.classList.remove("active"));
+document.getElementById(id).classList.add("active");
+document.querySelector('[data-page="'+id+'"]').classList.add("active");
+}
+document.querySelectorAll(".nav").forEach(b=>b.onclick=()=>show(b.dataset.page));
+
+function splitChunks(text,size=1000,overlap=150){
+let chunks=[];
+for(let i=0;i<text.length;i+=size-overlap){
+let part=text.slice(i,i+size).trim();
+if(part)chunks.push(part);
+}
+return chunks;
+}
+async function pdfText(file){
+let pdf=await pdfjsLib.getDocument({data:await file.arrayBuffer()}).promise;
+let text="";
+for(let i=1;i<=pdf.numPages;i++){
+let page=await pdf.getPage(i);
+let content=await page.getTextContent();
+text+=content.items.map(x=>x.str).join(" ")+"\n";
+}
+return text;
+}
+async function uploadFiles(files){
+let status=document.getElementById("uploadStatus");
+let input=document.getElementById("files");
+let uploaded=0;
+for(let file of files){
+try{
+if(file.size>10*1024*1024)throw Error("Each file must be 10 MB or smaller.");
+let extension=file.name.split(".").pop().toLowerCase();
+if(!["pdf","txt"].includes(extension))throw Error("Only PDF and TXT files are supported.");
+status.textContent="Reading "+file.name+"...";
+let text=extension==="pdf"?await pdfText(file):await file.text();
+if(!text.trim())throw Error("No readable text found. This PDF may be scanned; OCR is not supported.");
+let chunks=splitChunks(text);
+if(!chunks.length)throw Error("No readable study text found in this file.");
+docs.push({id:Date.now()+Math.random(),name:file.name,text,chunks,date:new Date().toLocaleDateString()});
+saveDocs();
+addMessage("bot","Successfully uploaded "+file.name+". Your document is ready for questions.");
+uploaded++;
+status.textContent="Uploaded "+file.name+" successfully.";
+}catch(err){
+status.textContent="Could not upload "+file.name+": "+err.message;
+addMessage("bot","Upload error for "+file.name+": "+err.message);
+}
+}
+input.value="";
+if(uploaded)status.textContent=uploaded+" document"+(uploaded===1?"":"s")+" ready. You can now ask questions.";
+}
+document.getElementById("files").addEventListener("change",async e=>uploadFiles([...e.target.files]));
+let uploadArea=document.getElementById("uploadArea");
+uploadArea.addEventListener("dragover",e=>{e.preventDefault();uploadArea.classList.add("dragging");});
+uploadArea.addEventListener("dragleave",()=>uploadArea.classList.remove("dragging"));
+uploadArea.addEventListener("drop",e=>{
+e.preventDefault();
+uploadArea.classList.remove("dragging");
+uploadFiles([...e.dataTransfer.files]);
+});
+function escapeHTML(s){
+return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+function saveDocs(){
+render();
+}
+function render(){
+let html=docs.map(d=>`<div class="doc"><div class="doc-info"><div class="doc-icon">📄</div><div><strong>${escapeHTML(d.name)}</strong><small>${d.chunks.length} chunks · ${d.date}</small></div></div><button class="delete" onclick="removeDoc('${d.id}')">Delete</button></div>`).join("");
+document.getElementById("docs").innerHTML=html||'<div class="empty">Your library is empty.</div>';
+document.getElementById("recent").innerHTML=html||'<div class="empty">Your uploaded documents will appear here.</div>';
+document.getElementById("docCount").textContent=docs.length;
+document.getElementById("chunkCount").textContent=docs.reduce((a,d)=>a+d.chunks.length,0);
+document.getElementById("fileCount").textContent=docs.length+" files";
+document.getElementById("questionCount").textContent=questions;
+}
+function removeDoc(id){
+docs=docs.filter(d=>String(d.id)!==String(id));
+saveDocs();
+}
+function retrieve(question){
+let words=question.toLowerCase().match(/[a-z0-9]{3,}/g)||[];
+let candidates=[];
+docs.forEach(d=>d.chunks.forEach(chunk=>{
+let lower=chunk.toLowerCase();
+let score=words.reduce((n,w)=>n+(lower.includes(w)?1:0),0);
+if(score>0)candidates.push({name:d.name,chunk,score});
+}));
+candidates.sort((a,b)=>b.score-a.score);
+let selected=candidates.slice(0,8);
+if(!selected.length){
+selected=docs.flatMap(d=>d.chunks.slice(0,2).map(chunk=>({name:d.name,chunk,score:0})));
+}
+return selected.map(x=>"Document: "+x.name+"\n"+x.chunk).join("\n\n");
+}
+async function gemini(prompt){
+if(!apiKey)throw Error("Please enter your Gemini API key in Settings.");
+let response=await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+encodeURIComponent(model)+":generateContent",{
+method:"POST",
+headers:{"Content-Type":"application/json","x-goog-api-key":apiKey},
+body:JSON.stringify({
+systemInstruction:{parts:[{text:"You are StudyMate AI, a helpful academic assistant. Answer clearly using the supplied document context. If the answer is not in the context, explain that the uploaded documents do not contain enough information. Use simple English and structured explanations."}]},
+contents:[{role:"user",parts:[{text:prompt}]}],
+generationConfig:{temperature:0.4,maxOutputTokens:2048}
+})
+});
+let data=await response.json();
+if(!response.ok)throw Error(data.error?.message||"Gemini API request failed: "+response.status);
+let answer=data.candidates?.[0]?.content?.parts?.map(p=>p.text||"").join("\n");
+if(!answer)throw Error("Gemini returned no answer.");
+return answer;
+}
+async function askAI(question){
+if(!docs.length)throw Error("Please upload a PDF or TXT document first.");
+let context=retrieve(question);
+let prompt="Answer using the retrieved passages below. Explain in beginner-friendly language. If the passages do not contain the answer, say so.\n\nDOCUMENT CONTEXT:\n"+context+"\n\nSTUDENT QUESTION:\n"+question;
+return gemini(prompt);
+}
+function addMessage(type,text){
+let div=document.createElement("div");
+div.className="msg "+type;
+div.textContent=text;
+let box=document.getElementById("messages");
+box.appendChild(div);
+box.scrollTop=box.scrollHeight;
+return div;
+}
+async function send(){
+let input=document.getElementById("question");
+let q=input.value.trim();
+if(!q)return;
+if(!docs.length){
+addMessage("bot","Upload a PDF or TXT document in My Documents before asking a question.");
+show("library");
+return;
+}
+input.value="";
+addMessage("user",q);
+questions++;
+render();
+let loading=addMessage("bot","StudyMate is reading your documents...");
+try{
+loading.textContent=await askAI(q);
+}catch(err){loading.textContent="⚠️ "+err.message;}
+}
+function quick(q){
+show("tutor");
+document.getElementById("question").value=q;
+send();
+}
+async function makeTool(prompt){
+show("tools");
+let result=document.getElementById("result");
+result.textContent="Generating your study material...";
+try{
+result.textContent=await askAI(prompt);
+}catch(err){result.textContent="⚠️ "+err.message;}
+}
+document.getElementById("question").addEventListener("keydown",e=>{
+if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send();}
+});
+function saveSettings(){
+apiKey=document.getElementById("apiKey").value.trim();
+model=document.getElementById("model").value.trim()||"gemini-3.5-flash";
+sessionStorage.setItem("sm_key",apiKey);
+localStorage.setItem("sm_model",model);
+alert("Gemini configuration saved for this browser session.");
+}
+render();
+</script>
+</body>
+</html>
